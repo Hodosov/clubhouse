@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import { WhiteBlock } from '../../WhiteBlock';
 import { Button } from '../../Button';
@@ -6,8 +6,17 @@ import { StepInfo } from '../../StepInfo';
 import { Avatar } from '../../Avatar';
 
 import styles from './ChooseAvatarStep.module.scss';
+import { useRef } from 'react';
 
 export const ChooseAvatarStep = () => {
+  const inputRef = useRef()
+  const handleChangeImage = (e) => {}
+
+  useEffect(() => {
+    if(inputRef.current) {
+      inputRef.current.addEventListener('change', handleChangeImage)
+    }
+  }, [])
 
   return (
     <div className={styles.block}>
@@ -25,7 +34,7 @@ export const ChooseAvatarStep = () => {
             Choose a different photo
           </label>
         </div>
-        <input id="image" type="file" hidden />
+        <input id="image" ref={inputRef} type="file" hidden />
         <Button>
           Next
           <img className="d-ib ml-10" src="/static/arrow.svg" />
