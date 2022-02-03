@@ -1,9 +1,9 @@
 import React, { FC, ReactFragment, useEffect, useState } from "react";
 import clsx from "clsx";
 import { WhiteBlock } from "../../WhiteBlock";
-import { Button } from "../../Button";
-import { StepInfo } from "../../StepInfo";
-import { Avatar } from "../../Avatar";
+import { Button } from "@components/Button";
+import { StepInfo } from "@components/StepInfo";
+import { Avatar } from "@components/Avatar";
 
 import styles from "./ChooseAvatarStep.module.scss";
 import { useRef } from "react";

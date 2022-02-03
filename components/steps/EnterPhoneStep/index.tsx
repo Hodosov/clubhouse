@@ -1,9 +1,9 @@
 import React from "react";
 import clsx from "clsx";
 import NumberFormat from "react-number-format";
-import { WhiteBlock } from "../../WhiteBlock";
-import { Button } from "../../Button";
-import { StepInfo } from "../../StepInfo";
+import { WhiteBlock } from "@components/WhiteBlock";
+import { Button } from "@components/Button";
+import { StepInfo } from "@components/StepInfo";
 
 import styles from "./EnterPhoneStep.module.scss";
 

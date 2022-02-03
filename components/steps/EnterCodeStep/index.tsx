@@ -1,11 +1,15 @@
+import { useRouter } from "next/router";
 import { ChangeEvent, FC, useState } from "react";
 import clsx from "clsx";
-import { WhiteBlock } from "../../WhiteBlock";
-import { StepInfo } from "../../StepInfo";
-import { Button } from "../../Button";
+import { WhiteBlock } from "@components/WhiteBlock";
+import { StepInfo } from "@components/StepInfo";
+import { Button } from "@components/Button";
+import Axios from "@core/axios";
+
 import styles from "./EnterPhoneStep.module.scss";
 
 export const EnterCodeStep: FC = () => {
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [codes, setCodes] = useState(["", "", "", ""]);
     const nextDisabled = codes.some((v) => !v);
@@ -24,8 +28,15 @@ export const EnterCodeStep: FC = () => {
         }
     };
 
-    const onSubmit = () => {
-        setIsLoading(true);
+    const onSubmit = async () => {
+        try {
+            setIsLoading(true);
+            await Axios.get("/todos");
+            router.push("/rooms");
+        } catch (e) {
+            alert("Error actications");
+        }
+        setIsLoading(false);
     };
 
     return (
