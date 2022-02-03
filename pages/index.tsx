@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createContext, useState } from "react";
 import { WelcomeStep } from "@components/steps/WelcomeStep";
 import { EnterNameStep } from "@components/steps/EnterNameStep";
 import { GitHubStep } from "@components/steps/GitHubStep";
@@ -15,13 +15,24 @@ const StepsComponents = {
     5: EnterCodeStep,
 };
 
+type MainContextProps = {
+    onNextStep: () => void;
+    step: number;
+};
+
+export const MainContext = createContext<MainContextProps>(
+    {} as MainContextProps
+);
+
 export default function Home() {
     const [step, setStep] = useState<number>(0);
     const Step = StepsComponents[step];
 
+    const onNextStep = () => setStep((prev) => ++prev);
+
     return (
-        <div>
+        <MainContext.Provider value={{ step, onNextStep }}>
             <Step />
-        </div>
+        </MainContext.Provider>
     );
 }
