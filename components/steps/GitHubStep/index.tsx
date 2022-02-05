@@ -4,9 +4,12 @@ import { Button } from "@components/Button";
 import { StepInfo } from "@components/StepInfo";
 
 import styles from "./GitHubStep.module.scss";
-import React from "react";
+import React, { useContext } from "react";
+import { MainContext } from "pages";
 
 export const GitHubStep = () => {
+    const { onNextStep } = useContext(MainContext);
+
     return (
         <div className={styles.block}>
             <StepInfo
@@ -15,6 +18,7 @@ export const GitHubStep = () => {
             />
             <WhiteBlock className={clsx("m-auto mt-40", styles.whiteBlock)}>
                 <Button
+                    onClick={onNextStep}
                     className={clsx(
                         styles.button,
                         "d-i-flex align-items-center"

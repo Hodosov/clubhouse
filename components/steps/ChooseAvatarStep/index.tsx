@@ -1,4 +1,10 @@
-import React, { FC, ReactFragment, useEffect, useState } from "react";
+import React, {
+    FC,
+    ReactFragment,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 import clsx from "clsx";
 import { WhiteBlock } from "../../WhiteBlock";
 import { Button } from "@components/Button";
@@ -7,8 +13,10 @@ import { Avatar } from "@components/Avatar";
 
 import styles from "./ChooseAvatarStep.module.scss";
 import { useRef } from "react";
+import { MainContext } from "pages";
 
 export const ChooseAvatarStep: FC = () => {
+    const { onNextStep } = useContext(MainContext);
     const [avatarUrl, setAvatarUrl] = useState<string>("");
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -43,7 +51,7 @@ export const ChooseAvatarStep: FC = () => {
                     </label>
                 </div>
                 <input id="image" ref={inputRef} type="file" hidden />
-                <Button>
+                <Button onClick={onNextStep}>
                     Next
                     <img className="d-ib ml-10" src="/static/arrow.svg" />
                 </Button>
