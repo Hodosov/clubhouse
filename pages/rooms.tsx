@@ -2,8 +2,9 @@ import { Button } from "@components/Button";
 import { ConversationCard } from "@components/ConversationCard";
 import { Header } from "@components/Header";
 import Link from "next/link";
+import Axios from "@core/axios";
 
-export default function RoomsPage() {
+export default function RoomsPage({ rooms }) {
   return (
     <>
       <Header />
@@ -12,22 +13,39 @@ export default function RoomsPage() {
           <h1>All conversations</h1>
           <Button color="green">+ Start room</Button>
         </div>
-        <div className="mt-20">
-          <Link href={"/rooms/test-room"}>
-            <a>
-              <ConversationCard
-                title={"Create Clubhouse clone"}
-                speakers={[
-                  "https://media.istockphoto.com/photos/excited-woman-wearing-rainbow-cardigan-picture-id1327495437",
-                  "https://media.istockphoto.com/photos/smiling-indian-business-man-working-on-laptop-at-home-office-young-picture-id1307615661?s=612x612",
-                ]}
-                guests={["Vasy Pupkin"]}
-                listenersCount={1}
-              />
-            </a>
-          </Link>
+        <div className="grid mt-20">
+          {rooms.map((obj) => (
+            <Link href={`/rooms/${obj.id}`} key={obj.id}>
+              <a>
+                <ConversationCard
+                  title={obj.title}
+                  speakers={obj.avatars}
+                  guests={obj.guests}
+                  avatars={[]}
+                  listenersCount={0}
+                  // guestsCount={obj.guestsCount}
+                  // speakersCount={obj.speakersCount}
+                />
+              </a>
+            </Link>
+          ))}
         </div>
       </div>
     </>
   );
 }
+
+export const getServerSideProps = async () => {
+  try {
+    const { data: rooms } = await Axios.get("/rooms.json");
+    return {
+      props: {
+        rooms,
+      },
+    };
+  } catch (error) {
+    console.warn(error);
+  }
+
+  return { props: {} };
+};
