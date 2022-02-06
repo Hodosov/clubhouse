@@ -6,6 +6,7 @@ import { Avatar } from "@components/Avatar";
 import { Button } from "@components/Button";
 
 import style from "./profile.module.scss";
+import { ButtonBack } from "@components/BackButton";
 
 interface ProfileProps {
     fullname: string;
@@ -22,17 +23,7 @@ export const Profile: FC<ProfileProps> = ({
 }) => {
     return (
         <div className="container mt-40">
-            <Link href="/rooms">
-                <div className="d-flex cup">
-                    <Image
-                        width={20}
-                        height={20}
-                        src="/static/back-arrow.svg"
-                        alt="Back"
-                    />
-                    <h3 className="ml-10">Back</h3>
-                </div>
-            </Link>
+            <ButtonBack title="Back" href="/rooms" />
 
             <div className="d-flex align-items-center">
                 <div className="d-flex align-items-center">
