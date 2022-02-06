@@ -1,6 +1,6 @@
+import { FC } from "react";
 import clsx from "clsx";
 import Link from "next/link";
-import React from "react";
 import { useRouter } from "next/router";
 import { Button } from "@components/Button";
 
@@ -11,7 +11,7 @@ interface RoomProps {
   title: string;
 }
 
-export const Room: React.FC<RoomProps> = ({ title }) => {
+export const Room: FC<RoomProps> = ({ title }) => {
   const router = useRouter();
 
   return (
