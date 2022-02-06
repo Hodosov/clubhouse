@@ -1,14 +1,22 @@
 import passport from "passport";
-import { Strategy as TwitterStrategy } from "passport-twitter";
+import { Strategy as GithubStrategy } from "passport-github";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 passport.use(
-  new TwitterStrategy(
+  "github",
+  new GithubStrategy(
     {
-      consumerKey: process.env.TWITTER_CONSUMER_KEY,
-      consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-      callbackURL: "http://localhost:8080/auth/twitter/callback",
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: "http://localhost:8080/auth/github/callback",
     },
 
-    (token, tokenSecret, profile, done) => {}
+    (accessToken, refreshToken, profile, cb) => {
+      console.log(accessToken, refreshToken, profile, cb);
+    }
   )
 );
+
+export { passport };
