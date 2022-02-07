@@ -3,6 +3,8 @@ import { passport } from "./core/passport";
 
 const app = express();
 
+const PORT = process.env.PORT;
+
 app.get("/auth/github", passport.authenticate("github"));
 
 app.get(
@@ -11,6 +13,6 @@ app.get(
   (req, res) => res.send()
 );
 
-app.listen(8080, () => {
-  console.log("server run");
+app.listen(PORT, () => {
+  console.log(`server run on port: ${PORT}`);
 });
