@@ -2,7 +2,9 @@ import passport from "passport";
 import { Strategy as GithubStrategy } from "passport-github";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({
+  path: "server/.env",
+});
 
 passport.use(
   "github",
@@ -14,7 +16,11 @@ passport.use(
     },
 
     (accessToken, refreshToken, profile, cb) => {
-      console.log(accessToken, refreshToken, profile, cb);
+      const user = {
+        fullname: profile.displayName,
+        avatarUrl: profile.photos?.[0]?.value,
+      };
+      cb();
     }
   )
 );

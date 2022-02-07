@@ -8,7 +8,7 @@ app.get("/auth/github", passport.authenticate("github"));
 app.get(
   "/auth/github/callback",
   passport.authenticate("github", { failureRedirect: "/login" }),
-  (req, res) => res.redirect("/")
+  (req, res) => res.send()
 );
 
 app.listen(8080, () => {
