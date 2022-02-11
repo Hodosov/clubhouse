@@ -7,32 +7,54 @@ import { EnterPhoneStep } from "@components/steps/EnterPhoneStep";
 import { EnterCodeStep } from "@components/steps/EnterCodeStep";
 
 const StepsComponents = {
-    0: WelcomeStep,
-    1: EnterNameStep,
-    2: GitHubStep,
-    3: ChooseAvatarStep,
-    4: EnterPhoneStep,
-    5: EnterCodeStep,
+  0: WelcomeStep,
+  1: GitHubStep,
+  2: EnterNameStep,
+  3: ChooseAvatarStep,
+  4: EnterPhoneStep,
+  5: EnterCodeStep,
 };
 
 type MainContextProps = {
-    onNextStep: () => void;
-    step: number;
+  onNextStep: () => void;
+  setUserData: (data: User) => void;
+  setFieldValue: (field: keyof User, value: string) => void;
+  step: number;
+  userData: User;
+};
+
+type User = {
+  id: string;
+  fullname: string;
+  avatarUrl: string;
+  isActive: number;
+  username: string;
+  phone: string;
 };
 
 export const MainContext = createContext<MainContextProps>(
-    {} as MainContextProps
+  {} as MainContextProps
 );
 
 export default function Home() {
-    const [step, setStep] = useState<number>(0);
-    const Step = StepsComponents[step];
+  const [step, setStep] = useState<number>(0);
+  const [userData, setUserData] = useState<User>();
+  const Step = StepsComponents[step];
 
-    const onNextStep = () => setStep((prev) => ++prev);
+  const onNextStep = () => setStep((prev) => ++prev);
 
-    return (
-        <MainContext.Provider value={{ step, onNextStep }}>
-            <Step />
-        </MainContext.Provider>
-    );
+  const setFieldValue = (field: string, value: string) => {
+    setUserData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  return (
+    <MainContext.Provider
+      value={{ step, onNextStep, userData, setUserData, setFieldValue }}
+    >
+      <Step />
+    </MainContext.Provider>
+  );
 }
