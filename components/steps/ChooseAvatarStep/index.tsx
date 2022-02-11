@@ -34,12 +34,13 @@ export const ChooseAvatarStep: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChangeImage = async (event: Event) => {
-    const file = (event.target as HTMLInputElement).files[0];
+    const target = event.target as HTMLInputElement;
+    const file = target.files[0];
     if (file) {
       const imgUrl = URL.createObjectURL(file);
       setAvatarUrl(imgUrl);
       const data = await uploadFile(file);
-      console.log(data);
+      target.value = "";
     }
   };
 

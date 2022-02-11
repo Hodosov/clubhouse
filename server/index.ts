@@ -2,6 +2,7 @@ import express from "express";
 import { passport } from "./core/passport";
 import multer from "multer";
 import { nanoid } from "nanoid";
+import sharp from "sharp";
 import cors from "cors";
 
 import "./core/db";
@@ -27,7 +28,17 @@ const uploader = multer({
 app.use(cors());
 
 app.post("/upload", uploader.single("photo"), (req, res) => {
-  res.json(req.file);
+  const filePath = req.file.path;
+  sharp(filePath)
+    .resize(100, 100)
+    .toFormat("jpeg")
+    .toFile(filePath.replace(".png", ".jpeg"), (err) => {
+      if (err) {
+        throw err;
+      }
+      res.json(req.file);
+    });
+  // res.json(req.file);
 });
 
 app.get("/auth/github", passport.authenticate("github"));
