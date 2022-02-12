@@ -1,4 +1,5 @@
 import express from "express";
+import fs from "fs";
 import { passport } from "./core/passport";
 import multer from "multer";
 import { nanoid } from "nanoid";
@@ -30,15 +31,17 @@ app.use(cors());
 app.post("/upload", uploader.single("photo"), (req, res) => {
   const filePath = req.file.path;
   sharp(filePath)
-    .resize(100, 100)
+    .resize(150, 150)
     .toFormat("jpeg")
     .toFile(filePath.replace(".png", ".jpeg"), (err) => {
       if (err) {
         throw err;
       }
-      res.json(req.file);
+      fs.unlinkSync(filePath);
+      res.json({
+        url: `/avatars/${req.file.filename.replace(".png", ".jpeg")}`,
+      });
     });
-  // res.json(req.file);
 });
 
 app.get("/auth/github", passport.authenticate("github"));

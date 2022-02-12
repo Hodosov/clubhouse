@@ -37,7 +37,7 @@ export const MainContext = createContext<MainContextProps>(
 );
 
 export default function Home() {
-  const [step, setStep] = useState<number>(0);
+  const [step, setStep] = useState<number>(4);
   const [userData, setUserData] = useState<User>();
   const Step = StepsComponents[step];
 

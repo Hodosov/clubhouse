@@ -16,7 +16,7 @@ import { useRef } from "react";
 import { MainContext } from "pages";
 import axios from "@core/axios";
 
-const uploadFile = async (file: File) => {
+const uploadFile = async (file: File): Promise<{ url: string }> => {
   const formData = new FormData();
   formData.append("photo", file);
   const { data } = await axios.post("/upload", formData, {
@@ -29,8 +29,8 @@ const uploadFile = async (file: File) => {
 };
 
 export const ChooseAvatarStep: FC = () => {
-  const { onNextStep } = useContext(MainContext);
-  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const { onNextStep, setFieldValue, userData } = useContext(MainContext);
+  const [avatarUrl, setAvatarUrl] = useState<string>(userData.avatarUrl);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChangeImage = async (event: Event) => {
@@ -41,6 +41,8 @@ export const ChooseAvatarStep: FC = () => {
       setAvatarUrl(imgUrl);
       const data = await uploadFile(file);
       target.value = "";
+      setAvatarUrl(data.url);
+      setFieldValue("avatarUrl", data.url);
     }
   };
 
@@ -54,7 +56,7 @@ export const ChooseAvatarStep: FC = () => {
     <div className={styles.block}>
       <StepInfo
         icon="/static/celebration.png"
-        title={`Okay!`}
+        title={`Okay ${userData.fullname}!`}
         description="How’s this photo?"
       />
       <WhiteBlock className={clsx("m-auto mt-40", styles.whiteBlock)}>
