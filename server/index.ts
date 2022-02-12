@@ -5,8 +5,17 @@ import multer from "multer";
 import { nanoid } from "nanoid";
 import sharp from "sharp";
 import cors from "cors";
+import { Code } from "../models";
 
 import "./core/db";
+import { UserData } from "pages";
+import Axios from "axios";
+
+declare global {
+  namespace Express {
+    interface User extends UserData {}
+  }
+}
 
 const app = express();
 
@@ -26,7 +35,11 @@ const uploader = multer({
   }),
 });
 
+export const generateRandomCode = (max: number = 9999, min: number = 1000) =>
+  Math.floor(Math.random() * (max - min + 1)) + min;
+
 app.use(cors());
+app.use(express.json());
 
 app.post("/upload", uploader.single("photo"), (req, res) => {
   const filePath = req.file.path;
@@ -43,6 +56,42 @@ app.post("/upload", uploader.single("photo"), (req, res) => {
       });
     });
 });
+
+app.get(
+  "/auth/me",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    res.json(req.user);
+  }
+);
+
+app.get(
+  "/auth/sms",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const phone = req.query.phone;
+    const userId = req.user.id;
+    const smsCode = generateRandomCode();
+    if (!phone) {
+      return res.status(400).send();
+    }
+
+    try {
+      // const data = await Axios.get(
+      //   `https://sms.ru/sms/send?api_id=${process.env.SMS_API_KEY}&to=79992380831&msg=${code}`
+      // );
+
+      await Code.create({
+        code: smsCode,
+        user_id: userId,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Ошибка при отправке СМС-кода",
+      });
+    }
+  }
+);
 
 app.get("/auth/github", passport.authenticate("github"));
 

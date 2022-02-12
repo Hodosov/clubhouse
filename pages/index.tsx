@@ -17,19 +17,20 @@ const StepsComponents = {
 
 type MainContextProps = {
   onNextStep: () => void;
-  setUserData: (data: User) => void;
-  setFieldValue: (field: keyof User, value: string) => void;
+  setUserData: (data: UserData) => void;
+  setFieldValue: (field: keyof UserData, value: string) => void;
   step: number;
-  userData: User;
+  userData: UserData;
 };
 
-type User = {
-  id: string;
+export type UserData = {
+  id: number;
   fullname: string;
   avatarUrl: string;
   isActive: number;
   username: string;
   phone: string;
+  token?: string;
 };
 
 export const MainContext = createContext<MainContextProps>(
@@ -37,8 +38,8 @@ export const MainContext = createContext<MainContextProps>(
 );
 
 export default function Home() {
-  const [step, setStep] = useState<number>(4);
-  const [userData, setUserData] = useState<User>();
+  const [step, setStep] = useState<number>(0);
+  const [userData, setUserData] = useState<UserData>();
   const Step = StepsComponents[step];
 
   const onNextStep = () => setStep((prev) => ++prev);
@@ -49,6 +50,8 @@ export default function Home() {
       [field]: value,
     }));
   };
+
+  console.log(userData);
 
   return (
     <MainContext.Provider
