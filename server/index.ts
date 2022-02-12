@@ -85,6 +85,8 @@ app.get(
         code: smsCode,
         user_id: userId,
       });
+
+      res.status(201).send();
     } catch (error) {
       res.status(500).json({
         message: "Ошибка при отправке СМС-кода",

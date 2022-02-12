@@ -17,7 +17,7 @@ const opts: StrategyOptions = {
 passport.use(
   "jwt",
   new JwtStrategy(opts, (jwt_payload, done) => {
-    done(null, jwt_payload);
+    done(null, jwt_payload.data);
   })
 );
 

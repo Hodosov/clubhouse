@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Cookies from "js-cookie";
 import { WhiteBlock } from "@components/WhiteBlock";
 import { Button } from "@components/Button";
 import { StepInfo } from "@components/StepInfo";
@@ -25,6 +26,7 @@ export const GitHubStep = () => {
         const json = JSON.parse(user);
         setUserData(json);
         onNextStep();
+        Cookies.set("token", json.token);
       }
     });
   }, []);
