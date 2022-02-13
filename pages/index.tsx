@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { WelcomeStep } from "@components/steps/WelcomeStep";
 import { EnterNameStep } from "@components/steps/EnterNameStep";
 import { GitHubStep } from "@components/steps/GitHubStep";
@@ -37,8 +37,25 @@ export const MainContext = createContext<MainContextProps>(
   {} as MainContextProps
 );
 
+const getUserData = (): UserData | null => {
+  try {
+    return JSON.parse(localStorage.getItem("userData"));
+  } catch (error) {}
+};
+
+const getStep = (): number => {
+  const json = getUserData();
+  if (json) {
+    if (json.phone) {
+      return 5;
+    }
+    return 4;
+  }
+  return 0;
+};
+
 export default function Home() {
-  const [step, setStep] = useState<number>(0);
+  const [step, setStep] = useState<number>(getStep());
   const [userData, setUserData] = useState<UserData>();
   const Step = StepsComponents[step];
 
@@ -51,7 +68,19 @@ export default function Home() {
     }));
   };
 
-  console.log(userData);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const json = getUserData();
+      if (json) {
+        setUserData(json);
+        setStep(getStep());
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("userData", userData ? JSON.stringify(userData) : "");
+  }, [userData]);
 
   return (
     <MainContext.Provider
