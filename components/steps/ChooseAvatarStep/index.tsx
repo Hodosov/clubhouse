@@ -33,6 +33,11 @@ export const ChooseAvatarStep: FC = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>(userData.avatarUrl);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const avatarLetters = userData.fullname
+    .split(" ")
+    .map((s) => s[0])
+    .join("");
+
   const handleChangeImage = async (event: Event) => {
     const target = event.target as HTMLInputElement;
     const file = target.files[0];
@@ -61,7 +66,12 @@ export const ChooseAvatarStep: FC = () => {
       />
       <WhiteBlock className={clsx("m-auto mt-40", styles.whiteBlock)}>
         <div className={styles.avatar}>
-          <Avatar width="120px" height="120px" src={avatarUrl} />
+          <Avatar
+            width="120px"
+            height="120px"
+            src={avatarUrl}
+            letters={avatarLetters}
+          />
         </div>
         <div className="mb-30">
           <label htmlFor="image" className="link cup">
