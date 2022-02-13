@@ -66,6 +66,40 @@ app.get(
 );
 
 app.get(
+  "/auth/sms/activate",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+      const smsCode = req.query.code;
+
+      if (!smsCode) {
+        res.status(400).send();
+      }
+
+      const whereQuery = { code: smsCode, user_id: userId };
+      const findCode = await Code.findOne({
+        where: whereQuery,
+      });
+
+      if (findCode) {
+        await Code.destroy({
+          where: whereQuery,
+        });
+        return res.send();
+      } else {
+        throw new Error("user not found");
+      }
+    } catch (error) {
+      res.status(500).json({
+        message: "Ошибка при активации аккаунта",
+      });
+    }
+  }
+);
+
+app.get(
   "/auth/sms",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
