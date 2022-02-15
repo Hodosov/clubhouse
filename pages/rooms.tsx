@@ -14,7 +14,7 @@ export default function RoomsPage({ rooms }) {
           <Button color="green">+ Start room</Button>
         </div>
         <div className="grid mt-20">
-          {rooms.map((obj) => (
+          {rooms?.map((obj) => (
             <Link href={`/rooms/${obj.id}`} key={obj.id}>
               <a>
                 <ConversationCard

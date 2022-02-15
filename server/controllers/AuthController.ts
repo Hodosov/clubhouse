@@ -1,6 +1,6 @@
 import express from "express";
 import { generateRandomCode } from "../../server/utils/generateRandomCode";
-import { Code } from "../../models";
+import { Code, User } from "../../models";
 
 class AuthController {
   authCallback(req: express.Request, res: express.Response) {
@@ -17,14 +17,13 @@ class AuthController {
 
   async activate(req: express.Request, res: express.Response) {
     const userId = req.user.id;
+    const smsCode = req.query.code;
+
+    if (!smsCode) {
+      res.status(400).json({ message: "Введите код активации" });
+    }
 
     try {
-      const smsCode = req.query.code;
-
-      if (!smsCode) {
-        res.status(400).send();
-      }
-
       const whereQuery = { code: smsCode, user_id: userId };
       const findCode = await Code.findOne({
         where: whereQuery,
@@ -34,9 +33,17 @@ class AuthController {
         await Code.destroy({
           where: whereQuery,
         });
+        await User.update(
+          { isActive: 1 },
+          {
+            where: { id: userId },
+          }
+        );
         return res.send();
       } else {
-        throw new Error("user not found");
+        res.status(400).json({
+          message: "Код не найден",
+        });
       }
     } catch (error) {
       res.status(500).json({
