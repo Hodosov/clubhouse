@@ -1,8 +1,10 @@
 import { Button } from "@components/Button";
 import { ConversationCard } from "@components/ConversationCard";
 import { Header } from "@components/Header";
+import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
-import Axios from "@core/axios";
+import { checkAuth } from "utils/checkAuth";
+import { UserApi } from "./api/userApi";
 
 export default function RoomsPage({ rooms }) {
   return (
@@ -35,12 +37,20 @@ export default function RoomsPage({ rooms }) {
   );
 }
 
-export const getServerSideProps = async () => {
+export const getServerSideProps = async (ctx) => {
   try {
-    const { data: rooms } = await Axios.get("/rooms.json");
+    const user = await checkAuth(ctx);
+    if (!user) {
+      return {
+        redirect: {
+          destination: "/",
+        },
+      };
+    }
     return {
       props: {
-        rooms,
+        user,
+        rooms: [],
       },
     };
   } catch (error) {

@@ -1,10 +1,10 @@
 import Axios from "axios";
-import Cookies from "js-cookie";
+import { parseCookies } from "nookies";
 
 const instance = Axios.create({
   baseURL: "http://localhost:5051/",
   headers: {
-    Authorization: "Bearer " + Cookies.get("token"),
+    Authorization: "Bearer " + parseCookies()?.token,
   },
 });
 
