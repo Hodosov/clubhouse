@@ -14,12 +14,12 @@ import { Avatar } from "@components/Avatar";
 import styles from "./ChooseAvatarStep.module.scss";
 import { useRef } from "react";
 import { MainContext } from "pages";
-import axios from "@core/axios";
+import { Axios } from "@core/axios";
 
 const uploadFile = async (file: File): Promise<{ url: string }> => {
   const formData = new FormData();
   formData.append("photo", file);
-  const { data } = await axios.post("/upload", formData, {
+  const { data } = await Axios.post("/upload", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

@@ -4,7 +4,7 @@ import { Header } from "@components/Header";
 import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
 import { checkAuth } from "utils/checkAuth";
-import { UserApi } from "./api/userApi";
+// import { Api } from "./api/userApi";
 
 export default function RoomsPage({ rooms }) {
   return (

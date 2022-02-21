@@ -1,4 +1,4 @@
-import Axios from "@core/axios";
+import { Axios } from "@core/axios";
 import { Header } from "@components/Header";
 import { ButtonBack } from "@components/BackButton";
 import { Room } from "@components/Room.tsx";

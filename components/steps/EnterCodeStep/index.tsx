@@ -1,10 +1,9 @@
 import { useRouter } from "next/router";
-import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import clsx from "clsx";
 import { WhiteBlock } from "@components/WhiteBlock";
 import { StepInfo } from "@components/StepInfo";
-import { Button } from "@components/Button";
-import Axios from "@core/axios";
+import { Axios } from "@core/axios";
 
 import styles from "./EnterPhoneStep.module.scss";
 

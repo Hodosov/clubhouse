@@ -4,10 +4,9 @@ import NumberFormat from "react-number-format";
 import { WhiteBlock } from "@components/WhiteBlock";
 import { Button } from "@components/Button";
 import { StepInfo } from "@components/StepInfo";
-
 import styles from "./EnterPhoneStep.module.scss";
 import { MainContext } from "pages";
-import Axios from "@core/axios";
+import { Axios } from "@core/axios";
 
 type InputValueType = {
   formattedValue: string;
