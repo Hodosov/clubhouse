@@ -6,6 +6,8 @@ import cors from "cors";
 
 import "./core/db";
 import AuthController from "./controllers/AuthController";
+import RoomController from "./controllers/RoomController";
+
 import { uploader } from "./core/uploader";
 
 const app = express();
@@ -13,6 +15,27 @@ const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
+
+app.get(
+  "/rooms",
+  passport.authenticate("jwt", { session: false }),
+  RoomController.index
+);
+app.post(
+  "/rooms",
+  passport.authenticate("jwt", { session: false }),
+  RoomController.create
+);
+app.get(
+  "/rooms/:id",
+  passport.authenticate("jwt", { session: false }),
+  RoomController.show
+);
+app.delete(
+  "/rooms/:id",
+  passport.authenticate("jwt", { session: false }),
+  RoomController.delete
+);
 
 app.get(
   "/auth/me",

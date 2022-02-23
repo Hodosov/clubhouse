@@ -1,20 +1,28 @@
 import { Button } from "@components/Button";
 import { ConversationCard } from "@components/ConversationCard";
 import { Header } from "@components/Header";
+import { StartRoomModal } from "@components/StartRoomModal";
 import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
+import { useState } from "react";
 import { checkAuth } from "utils/checkAuth";
 // import { Api } from "./api/userApi";
 
 export default function RoomsPage({ rooms }) {
+  const [viisbleModal, setVisibleModal] = useState(false);
   return (
     <>
       <Header />
       <div className="container">
         <div className="mt-40 d-flex align-items-center justify-content-between">
           <h1>All conversations</h1>
-          <Button color="green">+ Start room</Button>
+          <Button onClick={() => setVisibleModal(true)} color="green">
+            + Start room
+          </Button>
         </div>
+        {viisbleModal && (
+          <StartRoomModal onClose={() => setVisibleModal(false)} />
+        )}
         <div className="grid mt-20">
           {rooms?.map((obj) => (
             <Link href={`/rooms/${obj.id}`} key={obj.id}>
