@@ -25,7 +25,7 @@ export const ConversationCard: React.FC<ConversationCard> = ({
       <h4 className={styles.title}>{title}</h4>
       <div className={clsx("d-flex mt-10", styles.content)}>
         <div className={styles.avatars}>
-          {speakers.map((url, i) => (
+          {speakers?.map((url, i) => (
             <Avatar
               key={url}
               width="45px"
@@ -41,7 +41,7 @@ export const ConversationCard: React.FC<ConversationCard> = ({
         </div>
         <div className={clsx(styles.info, "ml-10")}>
           <ul className={styles.users}>
-            {guests.map((name, i) => (
+            {guests?.map((name, i) => (
               <li key={i}>
                 {name}{" "}
                 <img

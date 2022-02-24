@@ -2,11 +2,10 @@ import { Button } from "@components/Button";
 import { ConversationCard } from "@components/ConversationCard";
 import { Header } from "@components/Header";
 import { StartRoomModal } from "@components/StartRoomModal";
-import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
 import { useState } from "react";
 import { checkAuth } from "utils/checkAuth";
-// import { Api } from "./api/userApi";
+import { Api } from "./api";
 
 export default function RoomsPage({ rooms }) {
   const [viisbleModal, setVisibleModal] = useState(false);
@@ -55,10 +54,13 @@ export const getServerSideProps = async (ctx) => {
         },
       };
     }
+
+    const rooms = await Api(ctx).getRooms();
+
     return {
       props: {
         user,
-        rooms: [],
+        rooms,
       },
     };
   } catch (error) {
