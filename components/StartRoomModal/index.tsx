@@ -1,9 +1,10 @@
+import { Axios } from "@core/axios";
 import clsx from "clsx";
-// import { useRouter } from "next/router";
-import React from "react";
-// import { Room, RoomType } from "../../api/RoomApi";
-// import { useAsyncAction } from "../../hooks/useAction";
-// import { fetchCreateRoom } from "../../redux/slices/roomsSlice";
+import { prepareServerlessUrl } from "next/dist/server/base-server";
+import { useRouter } from "next/router";
+import { RoomApi, RoomType } from "pages/api/roomApi";
+import { title } from "process";
+import React, { useState } from "react";
 import { Button } from "../Button";
 
 import styles from "./StartRoomModal.module.scss";
@@ -13,7 +14,19 @@ interface StartRoomModalProps {
 }
 
 export const StartRoomModal: React.FC<StartRoomModalProps> = ({ onClose }) => {
-  const [type, setType] = React.useState("open");
+  const [form, setForm] = useState<{ title: string; type: RoomType }>({
+    title: "",
+    type: "open",
+  });
+  const router = useRouter();
+  const onSubmit = async () => {
+    try {
+      const room = await RoomApi(Axios).createRoom(form);
+      router.push(`/rooms/${room.id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className={styles.overlay}>
@@ -30,7 +43,9 @@ export const StartRoomModal: React.FC<StartRoomModalProps> = ({ onClose }) => {
           <h3>Topic</h3>
           <input
             // value={title}
-            // onChange={(e) => setTitle(e.target.value)}
+            onChange={({ target }) =>
+              setForm((prev) => ({ ...prev, title: target.value }))
+            }
             className={styles.inputTitle}
             placeholder="Enter the topic to be discussed"
           />
@@ -39,9 +54,9 @@ export const StartRoomModal: React.FC<StartRoomModalProps> = ({ onClose }) => {
           <h3>Room type</h3>
           <div className="d-flex justify-content-between">
             <div
-              onClick={() => setType("open")}
+              onClick={() => setForm((prev) => ({ ...prev, type: "open" }))}
               className={clsx(styles.roomType, {
-                [styles.roomTypeActive]: type === "open",
+                [styles.roomTypeActive]: form.type === "open",
               })}
             >
               <img
@@ -53,9 +68,9 @@ export const StartRoomModal: React.FC<StartRoomModalProps> = ({ onClose }) => {
               <h5>Open</h5>
             </div>
             <div
-              onClick={() => setType("social")}
+              onClick={() => setForm((prev) => ({ ...prev, type: "social" }))}
               className={clsx(styles.roomType, {
-                [styles.roomTypeActive]: type === "social",
+                [styles.roomTypeActive]: form.type === "social",
               })}
             >
               <img
@@ -67,9 +82,9 @@ export const StartRoomModal: React.FC<StartRoomModalProps> = ({ onClose }) => {
               <h5>Social</h5>
             </div>
             <div
-              onClick={() => setType("closed")}
+              onClick={() => setForm((prev) => ({ ...prev, type: "closed" }))}
               className={clsx(styles.roomType, {
-                [styles.roomTypeActive]: type === "closed",
+                [styles.roomTypeActive]: form.type === "closed",
               })}
             >
               <img
@@ -85,17 +100,14 @@ export const StartRoomModal: React.FC<StartRoomModalProps> = ({ onClose }) => {
         <div className={styles.delimiter}></div>
         <div className="text-center">
           <h3>Start a room open to everyone</h3>
-          <Button
-            // onClick={onSubmit}
-            color="green"
-          >
+          <Button onClick={onSubmit} color="green">
             <img
               width="18px"
               height="18px"
               src="/static/celebration.png"
               alt="Celebration"
             />
-            Let's go
+            Let&apos;s go
           </Button>
         </div>
       </div>

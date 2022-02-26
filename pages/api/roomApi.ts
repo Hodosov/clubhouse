@@ -1,11 +1,12 @@
 import { AxiosInstance } from "axios";
-interface Room {
+export interface Room {
+  id: number;
   title: string;
   listenesrCount: number;
   speakers: any[];
 }
 
-type RoomType = "open" | "social" | "closed";
+export type RoomType = "open" | "social" | "closed";
 
 export const RoomApi = (instance: AxiosInstance) => {
   return {
@@ -19,8 +20,11 @@ export const RoomApi = (instance: AxiosInstance) => {
       return data;
     },
 
-    createRoom: async (title: string, type: RoomType): Promise<Room> => {
-      const { data } = await instance.post(`/rooms`, { title, type });
+    createRoom: async (form: {
+      title: string;
+      type: RoomType;
+    }): Promise<Room> => {
+      const { data } = await instance.post(`/rooms`, form);
       return data;
     },
 

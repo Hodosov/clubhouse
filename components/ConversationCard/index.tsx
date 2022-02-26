@@ -9,7 +9,6 @@ interface ConversationCard {
   title: string;
   avatars: string[];
   speakers: string[];
-  guests: string[];
   listenersCount: number;
 }
 
@@ -17,7 +16,6 @@ export const ConversationCard: React.FC<ConversationCard> = ({
   title,
   avatars,
   speakers = [],
-  guests,
   listenersCount,
 }) => {
   return (
@@ -41,7 +39,7 @@ export const ConversationCard: React.FC<ConversationCard> = ({
         </div>
         <div className={clsx(styles.info, "ml-10")}>
           <ul className={styles.users}>
-            {guests?.map((name, i) => (
+            {speakers?.map((name, i) => (
               <li key={i}>
                 {name}{" "}
                 <img
@@ -71,7 +69,7 @@ export const ConversationCard: React.FC<ConversationCard> = ({
                 width={12}
                 height={12}
               />{" "}
-              {speakers.length}
+              {speakers?.length}
             </li>
           </ul>
         </div>

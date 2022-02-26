@@ -2,13 +2,20 @@ import { Button } from "@components/Button";
 import { ConversationCard } from "@components/ConversationCard";
 import { Header } from "@components/Header";
 import { StartRoomModal } from "@components/StartRoomModal";
+import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
 import { useState } from "react";
 import { checkAuth } from "utils/checkAuth";
 import { Api } from "./api";
+import { Room } from "./api/roomApi";
 
-export default function RoomsPage({ rooms }) {
+interface RoomPageProps {
+  rooms: Room[];
+}
+
+const RoomsPage: NextPage<RoomPageProps> = ({ rooms }) => {
   const [viisbleModal, setVisibleModal] = useState(false);
+
   return (
     <>
       <Header />
@@ -28,12 +35,9 @@ export default function RoomsPage({ rooms }) {
               <a>
                 <ConversationCard
                   title={obj.title}
-                  speakers={obj.avatars}
-                  guests={obj.guests}
+                  speakers={obj.speakers}
                   avatars={[]}
-                  listenersCount={0}
-                  // guestsCount={obj.guestsCount}
-                  // speakersCount={obj.speakersCount}
+                  listenersCount={obj.listenesrCount}
                 />
               </a>
             </Link>
@@ -42,13 +46,16 @@ export default function RoomsPage({ rooms }) {
       </div>
     </>
   );
-}
+};
 
-export const getServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<
+  RoomPageProps | {}
+> = async (ctx) => {
   try {
     const user = await checkAuth(ctx);
     if (!user) {
       return {
+        props: {},
         redirect: {
           destination: "/",
         },
@@ -59,13 +66,12 @@ export const getServerSideProps = async (ctx) => {
 
     return {
       props: {
-        user,
         rooms,
       },
     };
   } catch (error) {
     console.warn(error);
   }
-
-  return { props: {} };
 };
+
+export default RoomsPage;

@@ -2,6 +2,7 @@ import { Axios } from "@core/axios";
 import { Header } from "@components/Header";
 import { ButtonBack } from "@components/BackButton";
 import { Room } from "@components/Room.tsx";
+import { Api } from "pages/api";
 
 export default function ProfilePage({ room }) {
   return (
@@ -9,16 +10,17 @@ export default function ProfilePage({ room }) {
       <Header />
       <div className="container mt-40">
         <ButtonBack title="All roms" href="/rooms" />
-        <Room title={room.title} />
+        <Room title={room?.title} />
       </div>
     </>
   );
 }
 
-export const getServerSideProps = async ({ query }) => {
+export const getServerSideProps = async (ctx) => {
   try {
-    const { data } = await Axios.get("/rooms.json");
-    const room = data.find((obj) => obj.id === query.id);
+    const roomId = ctx.query.id;
+    const room = await Api(ctx).getRoom(roomId);
+
     return {
       props: {
         room,
@@ -26,7 +28,11 @@ export const getServerSideProps = async ({ query }) => {
     };
   } catch (error) {
     console.warn(error);
+    return {
+      props: {},
+      redirect: {
+        destination: "/rooms",
+      },
+    };
   }
-
-  return { props: {} };
 };
