@@ -2,7 +2,7 @@ import { AxiosInstance } from "axios";
 export interface Room {
   id: number;
   title: string;
-  listenesrCount: number;
+  listenersCount: number;
   speakers: any[];
 }
 

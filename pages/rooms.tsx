@@ -37,7 +37,7 @@ const RoomsPage: NextPage<RoomPageProps> = ({ rooms }) => {
                   title={obj.title}
                   speakers={obj.speakers}
                   avatars={[]}
-                  listenersCount={obj.listenesrCount}
+                  listenersCount={obj.listenersCount}
                 />
               </a>
             </Link>
