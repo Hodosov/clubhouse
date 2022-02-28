@@ -1,6 +1,7 @@
 import express from "express";
 import { generateRandomCode } from "../../server/utils/generateRandomCode";
 import { Code, User } from "../../models";
+// import { Axios } from "../../core/axios";
 
 class AuthController {
   authCallback(req: express.Request, res: express.Response) {
@@ -63,8 +64,8 @@ class AuthController {
     }
 
     try {
-      // const data = await Axios.get(
-      //   `https://sms.ru/sms/send?api_id=${process.env.SMS_API_KEY}&to=79992380831&msg=${code}`
+      // await Axios.get(
+      //   `https://sms.ru/sms/send?api_id=${process.env.SMS_API_KEY}&to=79992380831&msg=${smsCode}`
       // );
 
       const findCode = await Code.findOne({

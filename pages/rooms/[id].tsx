@@ -3,7 +3,7 @@ import { ButtonBack } from "@components/BackButton";
 import { Room } from "@components/Room.tsx";
 import { Api } from "pages/api";
 
-export default function ProfilePage({ room }) {
+export default function RoomPage({ room }) {
   return (
     <>
       <Header />
