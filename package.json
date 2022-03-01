@@ -10,6 +10,7 @@
     "migrate": "npx sequelize-cli db:migrate"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.8.0",
     "axios": "^0.25.0",
     "clsx": "^1.1.1",
     "cors": "^2.8.5",

@@ -13,7 +13,7 @@ export const GitHubStep = () => {
 
   const onClickAuth = () => {
     const win = window.open(
-      "http://localhost:5051/auth/github",
+      "http://192.168.0.143:5051/auth/github",
       "Auth",
       "width=500,height=500,status=yes,toolbar=no,menubar=no,location=no"
     );
