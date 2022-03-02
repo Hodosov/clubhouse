@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import { RoomApi, RoomType } from "pages/api/roomApi";
 import { title } from "process";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { fetchCreateRoom, useAsyncAction } from "redux/slices/roomsSlice";
 import { Button } from "../Button";
 
 import styles from "./StartRoomModal.module.scss";
@@ -19,13 +21,10 @@ export const StartRoomModal: React.FC<StartRoomModalProps> = ({ onClose }) => {
     type: "open",
   });
   const router = useRouter();
+  const createRoom = useAsyncAction(fetchCreateRoom);
   const onSubmit = async () => {
-    try {
-      const room = await RoomApi(Axios).createRoom(form);
-      router.push(`/rooms/${room.id}`);
-    } catch (error) {
-      console.log(error);
-    }
+    const room = createRoom(form);
+    router.push(`/rooms/${room.id}`);
   };
 
   return (
