@@ -2,9 +2,19 @@ import "../styles/globals.scss";
 import React from "react";
 import withRedux from "next-redux-wrapper";
 import { makeStore } from "redux/store";
+import App, { AppContext } from "next/app";
 
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />;
+class MyApp extends App {
+  static async getServer({ Component, ctx }: AppContext) {
+    const pageProps = Component.getInitialProps
+      ? await Component.getInitialProps(ctx)
+      : {};
+    return { pageProps };
+  }
+  render() {
+    const { Component, pageProps } = this.props;
+    return <Component {...pageProps} />;
+  }
 }
 
 export default withRedux(makeStore)(MyApp);

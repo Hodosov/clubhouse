@@ -1,12 +1,9 @@
-import { Axios } from "@core/axios";
 import clsx from "clsx";
-import { prepareServerlessUrl } from "next/dist/server/base-server";
+import { useAsyncAction } from "hooks/useAction";
 import { useRouter } from "next/router";
-import { RoomApi, RoomType } from "pages/api/roomApi";
-import { title } from "process";
+import { Room, RoomType } from "pages/api/roomApi";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { fetchCreateRoom, useAsyncAction } from "redux/slices/roomsSlice";
+import { fetchCreateRoom } from "redux/slices/roomsSlice";
 import { Button } from "../Button";
 
 import styles from "./StartRoomModal.module.scss";
@@ -23,7 +20,7 @@ export const StartRoomModal: React.FC<StartRoomModalProps> = ({ onClose }) => {
   const router = useRouter();
   const createRoom = useAsyncAction(fetchCreateRoom);
   const onSubmit = async () => {
-    const room = createRoom(form);
+    const room: Room = await createRoom(form);
     router.push(`/rooms/${room.id}`);
   };
 
