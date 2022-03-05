@@ -10,7 +10,7 @@ export type RoomType = "open" | "social" | "closed";
 
 export const RoomApi = (instance: AxiosInstance) => {
   return {
-    getRooms: async (): Promise<Room> => {
+    getRooms: async (): Promise<Room[]> => {
       const { data } = await instance.get("/rooms");
       return data;
     },

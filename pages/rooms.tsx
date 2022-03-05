@@ -6,6 +6,7 @@ import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { setRooms } from "redux/slices/roomsSlice";
 import { selectRooms } from "redux/slices/selectors";
 import { wrapper } from "redux/store";
 import { checkAuth } from "utils/checkAuth";
@@ -61,11 +62,10 @@ export const getServerSideProps: GetServerSideProps =
       }
 
       const rooms = await Api(ctx).getRooms();
+      ctx.store.dispatch(setRooms(rooms));
 
       return {
-        props: {
-          rooms,
-        },
+        props: {},
       };
     } catch (error) {
       console.warn(error);
