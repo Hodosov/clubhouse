@@ -7,11 +7,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { setRooms } from "redux/slices/roomsSlice";
-import { selectRooms } from "redux/slices/selectors";
+import { selectRooms } from "redux/selectors";
 import { wrapper } from "redux/store";
 import { checkAuth } from "utils/checkAuth";
 import { Api } from "./api";
 import { Room } from "./api/roomApi";
+import { setUser } from "redux/slices/userSlice";
 
 const RoomsPage: NextPage = () => {
   const [viisbleModal, setVisibleModal] = useState(false);
@@ -52,6 +53,7 @@ export const getServerSideProps: GetServerSideProps =
   wrapper.getServerSideProps(async (ctx) => {
     try {
       const user = await checkAuth(ctx);
+
       if (!user) {
         return {
           props: {},
@@ -63,6 +65,7 @@ export const getServerSideProps: GetServerSideProps =
 
       const rooms = await Api(ctx).getRooms();
       ctx.store.dispatch(setRooms(rooms));
+      ctx.store.dispatch(setUser(user));
 
       return {
         props: {},
