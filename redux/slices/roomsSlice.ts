@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Room, RoomApi, RoomType } from "pages/api/roomApi";
 import { Axios } from "@core/axios";
 import { HYDRATE } from "next-redux-wrapper";
-import { RootState } from "redux/store";
+import { RootState } from "redux/types";
 
 export type RoomsState = {
   items: Room[];
@@ -15,7 +15,7 @@ const initialState: RoomsState = {
 export const fetchCreateRoom = createAsyncThunk<
   Room,
   { title: string; type: RoomType }
->("rooms/fetchCreateRoomStatus", async (form, thunkAPI) => {
+>("rooms/fetchCreateRoomStatus", async (form) => {
   try {
     const room = await RoomApi(Axios).createRoom(form);
     return room;
