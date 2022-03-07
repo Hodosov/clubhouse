@@ -1,8 +1,9 @@
 import { GetServerSidePropsContext } from "next";
 import { Api } from "../pages/api";
 import { UserData } from "../pages";
-import { RootState } from "redux/store";
+import { RootState } from "redux/types";
 import { Store } from "@reduxjs/toolkit";
+import { setUser } from "redux/slices/userSlice";
 
 export const checkAuth = async (
   ctx: any & {
@@ -10,7 +11,9 @@ export const checkAuth = async (
   }
 ): Promise<UserData | null> => {
   try {
-    return await Api(ctx).getMe();
+    const user = await Api(ctx).getMe();
+    ctx.store.dispatch(setUser(user));
+    return user;
   } catch (error) {
     return null;
   }

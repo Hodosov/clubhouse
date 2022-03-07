@@ -2,6 +2,8 @@ import { Header } from "@components/Header";
 import { ButtonBack } from "@components/BackButton";
 import { Room } from "@components/Room.tsx";
 import { Api } from "pages/api";
+import { wrapper } from "redux/store";
+import { checkAuth } from "utils/checkAuth";
 
 export default function RoomPage({ room }) {
   return (
@@ -15,10 +17,19 @@ export default function RoomPage({ room }) {
   );
 }
 
-export const getServerSideProps = async (ctx) => {
+export const getServerSideProps = wrapper.getServerSideProps(async (ctx) => {
   try {
+    const user = await checkAuth(ctx);
+    if (!user) {
+      return {
+        props: {},
+        redirect: {
+          destination: "/",
+        },
+      };
+    }
     const roomId = ctx.query.id;
-    const room = await Api(ctx).getRoom(roomId);
+    const room = await Api(ctx).getRoom(roomId.toString());
 
     return {
       props: {
@@ -34,4 +45,4 @@ export const getServerSideProps = async (ctx) => {
       },
     };
   }
-};
+});
