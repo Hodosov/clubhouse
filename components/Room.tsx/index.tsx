@@ -1,18 +1,24 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { Button } from "@components/Button";
 
 import styles from "./Room.module.scss";
 import Image from "next/image";
+import { Speaker } from "@components/Speaker";
 
 interface RoomProps {
   title: string;
 }
 
+type User = {
+  id: string;
+  fullname: string;
+  avatarUrl: string;
+};
+
 export const Room: FC<RoomProps> = ({ title }) => {
-  const router = useRouter();
+  const [users, setUsers] = useState<User[]>([]);
 
   return (
     <div className={styles.wrapper}>
@@ -38,9 +44,9 @@ export const Room: FC<RoomProps> = ({ title }) => {
       </div>
 
       <div className="users">
-        {/* {users.map((obj) => (
+        {users?.map((obj) => (
           <Speaker key={obj.fullname} {...obj} />
-        ))} */}
+        ))}
       </div>
     </div>
   );

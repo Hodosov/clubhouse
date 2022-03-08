@@ -5,11 +5,31 @@ import { Api } from "pages/api";
 import { wrapper } from "redux/store";
 import { checkAuth } from "utils/checkAuth";
 
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
+import { useEffect, useRef } from "react";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { useRouter } from "next/router";
 
-const socket = io("http://192.168.0.143:5051");
+export default function RoomPage({ room, user }) {
+  const router = useRouter();
+  const socketRef = useRef<Socket<DefaultEventsMap, DefaultEventsMap>>();
 
-export default function RoomPage({ room }) {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      socketRef.current = io("http://192.168.0.143:5051");
+
+      socketRef.current.emit("CLIENT@ROOMS:JOIN", {
+        roomId: router.query.id,
+        user,
+      });
+
+      socketRef.current.on("SERVER@ROOMS:JOIN", (user) => console.log(user));
+    }
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, []);
+
   return (
     <>
       <Header />
@@ -38,6 +58,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async (ctx) => {
     return {
       props: {
         room,
+        user,
       },
     };
   } catch (error) {
