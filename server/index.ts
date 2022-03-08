@@ -3,7 +3,8 @@ import fs from "fs";
 import { passport } from "./core/passport";
 import sharp from "sharp";
 import cors from "cors";
-
+import socket from "socket.io";
+import { createServer } from "http";
 import "./core/db";
 import AuthController from "./controllers/AuthController";
 import RoomController from "./controllers/RoomController";
@@ -11,6 +12,18 @@ import RoomController from "./controllers/RoomController";
 import { uploader } from "./core/uploader";
 
 const app = express();
+const server = createServer(app);
+
+const io = socket(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("Connect socket");
+});
+
 const PORT = process.env.PORT;
 
 app.use(cors());
@@ -79,6 +92,6 @@ app.get(
   AuthController.authCallback
 );
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`server run on port: ${PORT}`);
 });

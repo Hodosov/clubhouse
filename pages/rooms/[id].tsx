@@ -5,6 +5,10 @@ import { Api } from "pages/api";
 import { wrapper } from "redux/store";
 import { checkAuth } from "utils/checkAuth";
 
+import io from "socket.io-client";
+
+const socket = io("http://192.168.0.143:5051");
+
 export default function RoomPage({ room }) {
   return (
     <>
