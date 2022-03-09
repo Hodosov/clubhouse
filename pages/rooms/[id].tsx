@@ -5,31 +5,7 @@ import { Api } from "pages/api";
 import { wrapper } from "redux/store";
 import { checkAuth } from "utils/checkAuth";
 
-import io, { Socket } from "socket.io-client";
-import { useEffect, useRef } from "react";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { useRouter } from "next/router";
-
 export default function RoomPage({ room, user }) {
-  const router = useRouter();
-  const socketRef = useRef<Socket<DefaultEventsMap, DefaultEventsMap>>();
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      socketRef.current = io("http://192.168.0.143:5051");
-
-      socketRef.current.emit("CLIENT@ROOMS:JOIN", {
-        roomId: router.query.id,
-        user,
-      });
-
-      socketRef.current.on("SERVER@ROOMS:JOIN", (user) => console.log(user));
-    }
-    return () => {
-      socketRef.current.disconnect();
-    };
-  }, []);
-
   return (
     <>
       <Header />

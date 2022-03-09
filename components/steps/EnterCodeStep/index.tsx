@@ -1,26 +1,31 @@
 import { useRouter } from "next/router";
-import { ChangeEvent, FC, useState } from "react";
+import { ChangeEvent, FC, useContext, useState } from "react";
 import clsx from "clsx";
 import { WhiteBlock } from "@components/WhiteBlock";
 import { StepInfo } from "@components/StepInfo";
 import { Axios } from "@core/axios";
 
 import styles from "./EnterPhoneStep.module.scss";
+import { MainContext } from "pages";
 
 export const EnterCodeStep: FC = () => {
   const router = useRouter();
+  const { userData } = useContext(MainContext);
   const [isLoading, setIsLoading] = useState(false);
   const [codes, setCodes] = useState(["", "", "", ""]);
   const nextDisabled = codes.some((v) => !v);
 
-  const onSubmit = async (codes: string) => {
+  const onSubmit = async (code: string) => {
     try {
       setIsLoading(true);
-      await Axios.get(`/auth/sms/activate?code=${codes}`);
+      await Axios.post(`/auth/sms/activate`, {
+        code,
+        user: userData,
+      });
       router.push("/rooms");
       setIsLoading(false);
     } catch (e) {
-      alert("Error actications");
+      alert("Error activations");
     }
   };
 

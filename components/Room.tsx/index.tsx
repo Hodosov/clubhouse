@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { Button } from "@components/Button";
@@ -6,6 +6,12 @@ import { Button } from "@components/Button";
 import styles from "./Room.module.scss";
 import Image from "next/image";
 import { Speaker } from "@components/Speaker";
+import { useRouter } from "next/router";
+
+import io, { Socket } from "socket.io-client";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { useSelector } from "react-redux";
+import { selectUser } from "redux/selectors";
 
 interface RoomProps {
   title: string;
@@ -18,7 +24,33 @@ type User = {
 };
 
 export const Room: FC<RoomProps> = ({ title }) => {
+  const user = useSelector(selectUser);
   const [users, setUsers] = useState<User[]>([]);
+
+  const router = useRouter();
+  const socketRef = useRef<Socket<DefaultEventsMap, DefaultEventsMap>>();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      socketRef.current = io("http://192.168.0.143:5051");
+
+      socketRef.current.emit("CLIENT@ROOMS:JOIN", {
+        user,
+        roomId: router.query.id,
+      });
+
+      socketRef.current.on("ERVER@ROOMS:LEAVE", (user) => {
+        setUsers((prev) => prev.filter((obj) => obj.id !== user.id));
+      });
+
+      socketRef.current.on("SERVER@ROOMS:JOIN", (joinedUser) =>
+        setUsers((prev) => [...prev, joinedUser])
+      );
+    }
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, []);
 
   return (
     <div className={styles.wrapper}>

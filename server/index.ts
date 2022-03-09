@@ -16,6 +16,8 @@ const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT;
 
+const rooms: Record<string, any> = {};
+
 const io = socket(server, {
   cors: {
     origin: "*",
@@ -27,10 +29,16 @@ io.on("connection", (socket) => {
 
   socket.on("CLIENT@ROOMS:JOIN", ({ user, roomId }) => {
     socket.join(`room/${roomId}`);
-    io.to(`room/${roomId}`).emit("SERVER@ROOMS:JOIN", user);
+    socket.broadcast.to(`room/${roomId}`).emit("SERVER@ROOMS:JOIN", user);
+    rooms[socket.id] = { roomId, user };
   });
 
-  socket.on("disconnect", () => console.log("dicsonect"));
+  socket.on("disconnect", (socket) => {
+    if (rooms[socket.id]) {
+      const { roomId, user } = rooms[socket.id];
+      socket.broadcast.to(`room/${roomId}`).emit("SERVER@ROOMS:LEAVE", user);
+    }
+  });
 });
 
 app.use(cors());
@@ -61,7 +69,7 @@ app.get(
   passport.authenticate("jwt", { session: false }),
   AuthController.getMe
 );
-app.get(
+app.post(
   "/auth/sms/activate",
   passport.authenticate("jwt", { session: false }),
   AuthController.activate
