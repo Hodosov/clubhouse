@@ -12,6 +12,7 @@ import io, { Socket } from "socket.io-client";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { useSelector } from "react-redux";
 import { selectUser } from "redux/selectors";
+import { UserData } from "pages";
 
 interface RoomProps {
   title: string;
@@ -25,7 +26,7 @@ type User = {
 
 export const Room: FC<RoomProps> = ({ title }) => {
   const user = useSelector(selectUser);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserData[]>([]);
 
   const router = useRouter();
   const socketRef = useRef<Socket<DefaultEventsMap, DefaultEventsMap>>();
@@ -39,13 +40,14 @@ export const Room: FC<RoomProps> = ({ title }) => {
         roomId: router.query.id,
       });
 
-      socketRef.current.on("ERVER@ROOMS:LEAVE", (user) => {
+      socketRef.current.on("SERVER@ROOMS:LEAVE", (user) => {
         setUsers((prev) => prev.filter((obj) => obj.id !== user.id));
       });
 
-      socketRef.current.on("SERVER@ROOMS:JOIN", (joinedUser) =>
-        setUsers((prev) => [...prev, joinedUser])
-      );
+      socketRef.current.on("SERVER@ROOMS:JOIN", (users) => {
+        setUsers(users);
+      });
+      setUsers((prev) => [...prev, user]);
     }
     return () => {
       socketRef.current.disconnect();

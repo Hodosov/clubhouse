@@ -29,14 +29,20 @@ io.on("connection", (socket) => {
 
   socket.on("CLIENT@ROOMS:JOIN", ({ user, roomId }) => {
     socket.join(`room/${roomId}`);
-    socket.broadcast.to(`room/${roomId}`).emit("SERVER@ROOMS:JOIN", user);
     rooms[socket.id] = { roomId, user };
+    socket.to(`room/${roomId}`).emit(
+      "SERVER@ROOMS:JOIN",
+      Object.values(rooms)
+        .filter((obj) => obj.roomId === roomId)
+        .map((obj) => obj.user)
+    );
   });
 
-  socket.on("disconnect", (socket) => {
+  socket.on("disconnect", () => {
     if (rooms[socket.id]) {
       const { roomId, user } = rooms[socket.id];
       socket.broadcast.to(`room/${roomId}`).emit("SERVER@ROOMS:LEAVE", user);
+      delete rooms[socket.id];
     }
   });
 });

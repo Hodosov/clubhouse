@@ -1,14 +1,18 @@
-import Link from 'next/link';
-import React from 'react';
-import { Avatar } from '../Avatar';
+import Link from "next/link";
+import React from "react";
+import { Avatar } from "../Avatar";
 
 export type SpeakerProps = {
-  id: string;
+  id: number;
   fullname: string;
   avatarUrl: string;
 };
 
-export const Speaker: React.FC<SpeakerProps> = ({ id, fullname, avatarUrl }) => {
+export const Speaker: React.FC<SpeakerProps> = ({
+  id,
+  fullname,
+  avatarUrl,
+}) => {
   return (
     <Link href={`/profile/${id}`}>
       <a className="d-i-flex flex-column align-items-center mr-40 mb-40">
