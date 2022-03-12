@@ -11,12 +11,14 @@ import AuthController from "./controllers/AuthController";
 import RoomController from "./controllers/RoomController";
 
 import { uploader } from "./core/uploader";
+import { Room } from "./../models";
+import { getUsersFromRoom, SocketRoom } from "./utils/getUsersFromRoom";
 
 const app = express();
 const server = createServer(app);
 const PORT = process.env.PORT;
 
-const rooms: Record<string, any> = {};
+const rooms: SocketRoom = {};
 
 const io = socket(server, {
   cors: {
@@ -30,12 +32,9 @@ io.on("connection", (socket) => {
   socket.on("CLIENT@ROOMS:JOIN", ({ user, roomId }) => {
     socket.join(`room/${roomId}`);
     rooms[socket.id] = { roomId, user };
-    io.in(`room/${roomId}`).emit(
-      "SERVER@ROOMS:JOIN",
-      Object.values(rooms)
-        .filter((obj) => obj.roomId === roomId)
-        .map((obj) => obj.user)
-    );
+    const users = getUsersFromRoom(rooms, roomId);
+    io.in(`room/${roomId}`).emit("SERVER@ROOMS:JOIN", users);
+    Room.update({ speakers: users }, { where: { id: roomId } });
   });
 
   socket.on("disconnect", () => {
@@ -43,6 +42,8 @@ io.on("connection", (socket) => {
       const { roomId, user } = rooms[socket.id];
       socket.broadcast.to(`room/${roomId}`).emit("SERVER@ROOMS:LEAVE", user);
       delete rooms[socket.id];
+      const users = getUsersFromRoom(rooms, roomId);
+      Room.update({ speakers: users }, { where: { id: roomId } });
     }
   });
 });
