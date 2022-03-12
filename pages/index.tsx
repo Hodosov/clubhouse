@@ -95,8 +95,6 @@ export default function Home() {
   );
 }
 
-//wrapper.getServerSideProps
-
 export const getServerSideProps = wrapper.getServerSideProps(async (ctx) => {
   try {
     const user = await checkAuth(ctx);
