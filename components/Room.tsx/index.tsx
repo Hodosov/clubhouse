@@ -29,6 +29,7 @@ export const Room: FC<RoomProps> = ({ title }) => {
   const [users, setUsers] = useState<UserData[]>([]);
 
   const router = useRouter();
+  const roomId = router.query.id;
   const socketRef = useRef<Socket<DefaultEventsMap, DefaultEventsMap>>();
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export const Room: FC<RoomProps> = ({ title }) => {
 
       socketRef.current.emit("CLIENT@ROOMS:JOIN", {
         user,
-        roomId: router.query.id,
+        roomId,
       });
 
       socketRef.current.on("SERVER@ROOMS:LEAVE", (user) => {

@@ -30,7 +30,7 @@ io.on("connection", (socket) => {
   socket.on("CLIENT@ROOMS:JOIN", ({ user, roomId }) => {
     socket.join(`room/${roomId}`);
     rooms[socket.id] = { roomId, user };
-    socket.to(`room/${roomId}`).emit(
+    io.in(`room/${roomId}`).emit(
       "SERVER@ROOMS:JOIN",
       Object.values(rooms)
         .filter((obj) => obj.roomId === roomId)
