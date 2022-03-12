@@ -7,6 +7,7 @@ import { EnterPhoneStep } from "@components/steps/EnterPhoneStep";
 import { EnterCodeStep } from "@components/steps/EnterCodeStep";
 import { checkAuth } from "utils/checkAuth";
 import { Axios } from "@core/axios";
+import { wrapper } from "redux/store";
 
 const StepsComponents = {
   0: WelcomeStep,
@@ -94,7 +95,9 @@ export default function Home() {
   );
 }
 
-export const getServerSideProps = async (ctx) => {
+//wrapper.getServerSideProps
+
+export const getServerSideProps = wrapper.getServerSideProps(async (ctx) => {
   try {
     const user = await checkAuth(ctx);
     if (user) {
@@ -109,4 +112,4 @@ export const getServerSideProps = async (ctx) => {
   }
 
   return { props: {} };
-};
+});
