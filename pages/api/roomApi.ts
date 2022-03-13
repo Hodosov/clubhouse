@@ -1,9 +1,13 @@
 import { AxiosInstance } from "axios";
+import { UserData } from "pages";
+
+export type UserWithRoomId = UserData & { roomId: number };
+
 export interface Room {
   id: number;
   title: string;
   listenersCount: number;
-  speakers: any[];
+  speakers: UserWithRoomId[];
 }
 
 export type RoomType = "open" | "social" | "closed";

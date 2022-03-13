@@ -8,11 +8,10 @@ import Image from "next/image";
 import { Speaker } from "@components/Speaker";
 import { useRouter } from "next/router";
 
-import io, { Socket } from "socket.io-client";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { useSelector } from "react-redux";
 import { selectUser } from "redux/selectors";
 import { UserData } from "pages";
+import { useSocket } from "hooks/useSocket";
 
 interface RoomProps {
   title: string;
@@ -30,28 +29,28 @@ export const Room: FC<RoomProps> = ({ title }) => {
 
   const router = useRouter();
   const roomId = router.query.id;
-  const socketRef = useRef<Socket<DefaultEventsMap, DefaultEventsMap>>();
+  const socket = useSocket();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      socketRef.current = io("http://192.168.0.143:5051");
+      // socketRef.current = io("http://192.168.0.143:5051");
 
-      socketRef.current.emit("CLIENT@ROOMS:JOIN", {
+      socket.emit("CLIENT@ROOMS:JOIN", {
         user,
         roomId,
       });
 
-      socketRef.current.on("SERVER@ROOMS:LEAVE", (user) => {
+      socket.on("SERVER@ROOMS:LEAVE", (user) => {
         setUsers((prev) => prev.filter((obj) => obj.id !== user.id));
       });
 
-      socketRef.current.on("SERVER@ROOMS:JOIN", (users) => {
-        setUsers(users);
+      socket.on("SERVER@ROOMS:JOIN", (allUsers) => {
+        setUsers(allUsers);
       });
-      setUsers((prev) => [...prev, user]);
+      // setUsers((prev) => [...prev, user]);
     }
     return () => {
-      socketRef.current.disconnect();
+      socket.disconnect();
     };
   }, []);
 

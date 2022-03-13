@@ -32,9 +32,10 @@ io.on("connection", (socket) => {
   socket.on("CLIENT@ROOMS:JOIN", ({ user, roomId }) => {
     socket.join(`room/${roomId}`);
     rooms[socket.id] = { roomId, user };
-    const users = getUsersFromRoom(rooms, roomId);
-    io.in(`room/${roomId}`).emit("SERVER@ROOMS:JOIN", users);
-    Room.update({ speakers: users }, { where: { id: roomId } });
+    const speakers = getUsersFromRoom(rooms, roomId);
+    io.emit("SERVER@ROOMS:HOME", { roomId: Number(roomId), speakers });
+    io.in(`room/${roomId}`).emit("SERVER@ROOMS:JOIN", speakers);
+    Room.update({ speakers }, { where: { id: roomId } });
   });
 
   socket.on("disconnect", () => {
@@ -42,8 +43,9 @@ io.on("connection", (socket) => {
       const { roomId, user } = rooms[socket.id];
       socket.broadcast.to(`room/${roomId}`).emit("SERVER@ROOMS:LEAVE", user);
       delete rooms[socket.id];
-      const users = getUsersFromRoom(rooms, roomId);
-      Room.update({ speakers: users }, { where: { id: roomId } });
+      const speakers = getUsersFromRoom(rooms, roomId);
+      io.emit("SERVER@ROOMS:HOME", { roomId: Number(roomId), speakers });
+      Room.update({ speakers }, { where: { id: roomId } });
     }
   });
 });
