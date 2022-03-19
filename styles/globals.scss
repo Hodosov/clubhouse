@@ -50,7 +50,8 @@ a {
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, 380px);
+  justify-content: center;
   gap: 30px;
 }
 
@@ -67,5 +68,11 @@ a {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+.title {
+  @media screen and (min-width: 200px) and (max-width: 600px) {
+    font-size: 20px;
   }
 }
