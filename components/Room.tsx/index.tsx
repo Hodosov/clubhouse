@@ -18,11 +18,7 @@ interface RoomProps {
   title: string;
 }
 
-type User = {
-  id: string;
-  fullname: string;
-  avatarUrl: string;
-};
+let peers = [];
 
 export const Room: FC<RoomProps> = ({ title }) => {
   const user = useSelector(selectUser);
@@ -36,73 +32,109 @@ export const Room: FC<RoomProps> = ({ title }) => {
     if (typeof window !== "undefined") {
       navigator.mediaDevices
         .getUserMedia({
-          video: true,
           audio: true,
+          video: true,
         })
         .then((stream) => {
-          const peerIncome = new Peer({
-            initiator: true,
-            trickle: false,
-            stream,
+          socket.emit("CLIENT@ROOMS:JOIN", {
+            user,
+            roomId,
           });
 
-          peerIncome.on("signal", (signal) => {
-            socket.emit("CLIENT@ROOMS:CALL", {
-              user,
-              roomId,
-              signal,
-            });
-          });
+          socket.on("SERVER@ROOMS:JOIN", (allUsers: UserData[]) => {
+            setUsers(allUsers);
 
-          socket.on("SERVER@ROOMS:CALL", ({ user: callerUser, signal }) => {
-            console.log(111, user, signal);
-
-            const peerOutcome = new Peer({
-              initiator: false,
-              trickle: false,
-              stream,
-            });
-
-            peerOutcome.signal(signal);
-            peerOutcome
-              .on("stream", (stream) => {
-                document.querySelector("audio").srcObject = stream;
-                document.querySelector("audio").play();
-              })
-              .on("signal", (signal) => {
-                socket.emit("CLIENT@ROOMS:ANSWER", {
-                  targetUserId: callerUser.id,
-                  roomId,
-                  signal,
+            allUsers.forEach((speaker) => {
+              if (
+                user.id !== speaker.id &&
+                !peers.find((obj) => obj.id !== speaker.id)
+              ) {
+                const peerIncome = new Peer({
+                  initiator: true,
+                  trickle: false,
+                  stream,
                 });
-              });
+
+                peerIncome.on("signal", (signal) => {
+                  socket.emit("CLIENT@ROOMS:CALL", {
+                    targetUserId: speaker.id,
+                    callerUserId: user.id,
+                    roomId,
+                    signal,
+                  });
+                  peers.push({
+                    peer: peerIncome,
+                    id: speaker.id,
+                  });
+                });
+
+                socket.on(
+                  "SERVER@ROOMS:CALL",
+                  ({ targetUserId, callerUserId, signal: callerSignal }) => {
+                    const peerOutcome = new Peer({
+                      initiator: false,
+                      trickle: false,
+                      stream,
+                    });
+
+                    peerOutcome.signal(callerSignal);
+                    peerOutcome
+                      .on("signal", (outSignal) => {
+                        socket.emit("CLIENT@ROOMS:ANSWER", {
+                          targetUserId: callerUserId,
+                          callerUserId: targetUserId,
+                          roomId,
+                          signal: outSignal,
+                        });
+                      })
+                      .on("stream", (stream) => {
+                        document.querySelector("video").srcObject = stream;
+                        document.querySelector("video").play();
+                      });
+                  }
+                );
+
+                socket.on("SERVER@ROOMS:ANSWER", ({ callerUserId, signal }) => {
+                  const obj = peers.find(
+                    (obj) => Number(obj.id) === Number(callerUserId)
+                  );
+                  if (obj) {
+                    obj.peer.signal(signal);
+                  }
+                });
+              }
+            });
           });
-          socket.on("SERVER@ROOMS:ANSWER", ({ targetUserId, signal }) => {
-            if (user.id === targetUserId) {
-              peerIncome.signal(signal);
-            }
+
+          socket.on("SERVER@ROOMS:LEAVE", (leaveUser: UserData) => {
+            setUsers((prev) =>
+              prev.filter((prevUser) => {
+                const peerUser = peers.find(
+                  (obj) => Number(obj.id) === Number(leaveUser.id)
+                );
+                if (peerUser) {
+                  peerUser.peer.destroy();
+                }
+                return prevUser.id !== leaveUser.id;
+              })
+            );
           });
         })
-        .catch(() => console.log("Нет доступа к микрофону"));
-
-      socket.emit("CLIENT@ROOMS:JOIN", {
-        user,
-        roomId,
-      });
-
-      socket.on("SERVER@ROOMS:LEAVE", (user) => {
-        setUsers((prev) => prev.filter((obj) => obj.id !== user.id));
-      });
-
-      socket.on("SERVER@ROOMS:JOIN", (allUsers) => {
-        setUsers(allUsers);
-      });
+        .catch(() => {
+          console.error("Нет доступа к микрофону");
+        });
     }
+
+    return () => {
+      peers.forEach((obj) => {
+        obj.peer.destroy();
+      });
+    };
   }, []);
 
   return (
     <div className={styles.wrapper}>
-      <audio controls />
+      <video controls width={200} height={200} />
       <div className="d-flex align-items-center justify-content-between">
         <h2>{title}</h2>
         <div
