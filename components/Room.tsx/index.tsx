@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
+import Peer from "simple-peer";
 import { Button } from "@components/Button";
 
 import styles from "./Room.module.scss";
@@ -33,7 +34,56 @@ export const Room: FC<RoomProps> = ({ title }) => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // socketRef.current = io("http://192.168.0.143:5051");
+      navigator.mediaDevices
+        .getUserMedia({
+          video: true,
+          audio: true,
+        })
+        .then((stream) => {
+          const peerIncome = new Peer({
+            initiator: true,
+            trickle: false,
+            stream,
+          });
+
+          peerIncome.on("signal", (signal) => {
+            socket.emit("CLIENT@ROOMS:CALL", {
+              user,
+              roomId,
+              signal,
+            });
+          });
+
+          socket.on("SERVER@ROOMS:CALL", ({ user: callerUser, signal }) => {
+            console.log(111, user, signal);
+
+            const peerOutcome = new Peer({
+              initiator: false,
+              trickle: false,
+              stream,
+            });
+
+            peerOutcome.signal(signal);
+            peerOutcome
+              .on("stream", (stream) => {
+                document.querySelector("audio").srcObject = stream;
+                document.querySelector("audio").play();
+              })
+              .on("signal", (signal) => {
+                socket.emit("CLIENT@ROOMS:ANSWER", {
+                  targetUserId: callerUser.id,
+                  roomId,
+                  signal,
+                });
+              });
+          });
+          socket.on("SERVER@ROOMS:ANSWER", ({ targetUserId, signal }) => {
+            if (user.id === targetUserId) {
+              peerIncome.signal(signal);
+            }
+          });
+        })
+        .catch(() => console.log("Нет доступа к микрофону"));
 
       socket.emit("CLIENT@ROOMS:JOIN", {
         user,
@@ -47,15 +97,12 @@ export const Room: FC<RoomProps> = ({ title }) => {
       socket.on("SERVER@ROOMS:JOIN", (allUsers) => {
         setUsers(allUsers);
       });
-      // setUsers((prev) => [...prev, user]);
     }
-    return () => {
-      socket.disconnect();
-    };
   }, []);
 
   return (
     <div className={styles.wrapper}>
+      <audio controls />
       <div className="d-flex align-items-center justify-content-between">
         <h2>{title}</h2>
         <div

@@ -38,6 +38,20 @@ io.on("connection", (socket) => {
     Room.update({ speakers }, { where: { id: roomId } });
   });
 
+  socket.on("CLIENT@ROOMS:CALL", ({ user, roomId, signal }) => {
+    socket.broadcast.to(`room/${roomId}`).emit("SERVER@ROOMS:CALL", {
+      user,
+      signal,
+    });
+  });
+
+  socket.on("CLIENT@ROOMS:ANSWER", ({ targetUserId, roomId, signal }) => {
+    socket.broadcast.to(`room/${roomId}`).emit("SERVER@ROOMS:ANSWER", {
+      targetUserId,
+      signal,
+    });
+  });
+
   socket.on("disconnect", () => {
     if (rooms[socket.id]) {
       const { roomId, user } = rooms[socket.id];
